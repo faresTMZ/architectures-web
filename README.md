@@ -67,8 +67,8 @@ Toute initiative est la bienvenue, tant que les fonctionnalités demandées sont
 | iota      |               |               |                |                   |
 | kappa     |  Pierre-Olivier Coudert             |               |  https://github.com/MRmdum/TD-ArchiWeb              |  https://hub.docker.com/r/studentpierre/kappa_recipes                 |
 | lambda    |Antoine Castel |Arnaud PY      |[Lien GitHub](https://github.com/antoinecstl/Gourmitton)|[nonouille/lambda-archi-web](https://hub.docker.com/repository/docker/nonouille/lambda-archi-web/general)|
-| mu        |Clara Bou Hanna             |Tom Bray|              |  https://hub.docker.com/repository/docker/clarabh/gourmet-frontend/general           |
-| nu        |Elias Salvan   |Antoine Pélerin|https://github.com/elsgit43/architectures-web|https://hub.docker.com/r/elsal1/bon-app|
+| mu        |Clara Bou Hanna             |Tom Bray|[Lien GitHub](https://github.com/ClaraBH/gourmet)|  https://hub.docker.com/repository/docker/clarabh/gourmet-frontend/general           |
+| nu        |Elias Salvan   |Antoine Pélerin|https://github.com/elsgit43/architectures-web|                   |
 | xi        |               |               |                |                   |
 | omicron   |Victor Savalle |Vincent Frin   |https://github.com/KaptainHaddock/TD-ArchiWeb| https://hub.docker.com/repository/docker/victorsavalle/tdarchiweb/tags/latest/sha256-5c182624b119fc8dcb30aae5c4e82ca876598facbc156e8d4a30b6bab1b0880c            |
 | pi        | Elie Caratgé  | Ayman Ben Souira | [git@github.com:dotdelete/gourmet.git](https://github.com/dotdelete/gourmet.git) | [dotdelete/gourmet:latest](https://hub.docker.com/repository/docker/dotdelete/gourmet/general)                  |

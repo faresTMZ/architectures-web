@@ -28,13 +28,18 @@ Elle se basera sur une API REST qui permettra de gérer les recettes. Vous devre
 ### Contraintes
 
 - Utiliser Docker pour déployer votre application
+  - Construisez votre image à partir d'un Dockerfile, vous pouvez demander de l'aide si besoin
+  - Votre app écoute sur le port 80
+  - Construite pour linux/amd64
+  - non-root (unprivileged) sauf dérogation si impossible de faire autrement
+  - A publier sur un Image Registry (DockerHub, Github Container Registry, AWS ECR, GCR...)
 - Utiliser Git pour versionner votre code
 - Utiliser une des architectures vues en cours
   - **Recommendé**
     - React (Dockerfile fourni)
     - Next.js (Dockerfile fourni)
     - Astro (Dockerfile fourni)
-  - Je peux **aussi** vous noter sur les technologies suivantes. Cependant, je ne pourrai pas vous aider si vous avez des problèmes avec celles-ci, et je ne fournirai pas de Dockerfile. C'est à vos risques et périls!
+  - Je peux **aussi** vous noter sur les technologies suivantes. Cependant, je ne pourrai pas vous aider si vous avez des problèmes avec celles-ci. C'est à vos risques et périls!
     - Vue / Nuxt
     - Svelte / SvelteKit
     - Templating (Django, Go, Ruby on Rails, PHP)
@@ -50,33 +55,8 @@ Elle se basera sur une API REST qui permettra de gérer les recettes. Vous devre
 
 Toute initiative est la bienvenue, tant que les fonctionnalités demandées sont bien implémentées. Si vous avez des idées pour améliorer l'application, n'hésitez pas à les implémenter!
 
-### Pour commencer
+### Groupes et suivi TD
 
-### Groupes
+Voir [ce tableur](https://docs.google.com/spreadsheets/d/1shCI6NBOLrC_3sfzv9q0GupgE1JmD5wJv8AmuVOCqAk/edit?usp=sharing)
 
-| Team Name | Team Member 1 | Team Member 2 | Git Repository | Docker Image Link |
-| --------- | ------------- | ------------- | -------------- | ----------------- |
-| alpha     | Arthur Baudin | Clara Guillet |  https://github.com/dd-absol/archiweb-project |[lien docker hub](https://hub.docker.com/r/ddabsol/gourmet-astro)|
-| beta      | Damien Ouzillou | Theo Garampon | https://github.com/DamsOuz/GourmetRepo/ | https://hub.docker.com/r/damsouz/gourmet-recipes-app |
-| gamma     |Antoine Cheneau|               |         https://github.com/chenow/gourmitton         |    [chenow/gourmitton](https://hub.docker.com/r/chenow/gourmitton)               |
-| delta     |               |               |                |                   |
-| epsilon   |  Liwei SUN    | Dac-An VO     | https://github.com/Dac-An-hub/cass-app               |     https://hub.docker.com/r/desmesis/cass-app              |
-| zeta      |  Laurent Sun             |   Sharmilan             |     [https://github.com/laurentsunCs/RecipeApp](https://github.com/laurentsunCs/RecipeApp/)           |    llsun/recipe-app|
-| eta       |  Ayoub SGUIAR LHAMDANI |               |     https://github.com/ayoub-sguiar/architectures-web           |  ayoubsg/archiwebsite  |
-| theta     |               |               |                |                   |
-| iota      |               |               |                |                   |
-| kappa     |  Pierre-Olivier Coudert             |               |  https://github.com/MRmdum/TD-ArchiWeb              |  https://hub.docker.com/r/studentpierre/kappa_recipes                 |
-| lambda    |Antoine Castel |Arnaud PY      |[Lien GitHub](https://github.com/antoinecstl/Gourmitton)|[nonouille/lambda-archi-web](https://hub.docker.com/repository/docker/nonouille/lambda-archi-web/general)|
-| mu        |Clara Bou Hanna             |Tom Bray|[Lien GitHub](https://github.com/ClaraBH/gourmet)|  https://hub.docker.com/repository/docker/clarabh/gourmet-frontend/general           |
-| nu        |Elias Salvan   |Antoine Pélerin|https://github.com/elsgit43/architectures-web|                   |
-| xi        |               |               |                |                   |
-| omicron   |Victor Savalle |Vincent Frin   |https://github.com/KaptainHaddock/TD-ArchiWeb| https://hub.docker.com/repository/docker/victorsavalle/tdarchiweb/tags/latest/sha256-5c182624b119fc8dcb30aae5c4e82ca876598facbc156e8d4a30b6bab1b0880c            |
-| pi        | Elie Caratgé  | Ayman Ben Souira | [git@github.com:dotdelete/gourmet.git](https://github.com/dotdelete/gourmet.git) | [dotdelete/gourmet:latest](https://hub.docker.com/repository/docker/dotdelete/gourmet/general)                  |
-| rho       |               |               |                |                   |
-| sigma     |Thibault Muller|Pierre-Louis Veyrenc|[tibo-mllr/TP-archi-web](https://github.com/tibo-mllr/TP-archi-web)|[tibo-mllr/sigma-cooking](https://hub.docker.com/r/tibomllr/sigma-cooking)|
-| tau       | Timothée Vargenau              |               | [Lien GitHub](https://github.com/timothee-vrg/architectures-web-recipe)               | [Lien DockerHub](https://hub.docker.com/repository/docker/timotheevargenau/archiweb-recipe/general)                  |
-| upsilon   |Alex Melhem|               |[J'ai faim](https://github.com/41ks/archiweb-jaifaim)|[am0911/jaifaim](https://hub.docker.com/r/am0911/jaifaim)|
-| phi       |               |               |                |                   |
-| chi       | Alexandre Correia   |  Gustave Legrand     | https://github.com/AlexandreCGithub/archiweb-TD               |  https://hub.docker.com/r/magnoir/archiweb-td                 |
-| psi       | Lisa Lupi|Thomas Soupizet|[github](https://github.com/lisa-lupi-cs/archiweb)|[docker](https://hub.docker.com/r/thomas01111/duo_gourmand)|
-| omega     | Thomas Melwig |Valentin Gérard|[CookingMadness](https://github.com/tmelwig/CookingMadness)|[DockerImage](https://hub.docker.com/repository/docker/ankydios/cooking-madness/general)|
+Envoyez moi un message pour inscrire votre groupe. J'ai besoin de vos noms dans un premier temps, puis renvoyez moi un message pour remplir le lien github et le lien vers votre image docker.

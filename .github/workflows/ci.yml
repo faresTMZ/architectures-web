@@ -39,7 +39,12 @@ jobs:
         run: |
           node <<'EOF'
           const fs = require('fs');
-          const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8')).total;
+          const summaryPath = 'coverage/coverage-summary.json';
+          if (!fs.existsSync(summaryPath)) {
+            console.log('No coverage summary found; skipping table.');
+            return;
+          }
+          const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8')).total;
           const rows = [
             ['Statements', summary.statements],
             ['Branches', summary.branches],

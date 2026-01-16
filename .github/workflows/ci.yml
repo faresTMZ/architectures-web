@@ -39,28 +39,30 @@ jobs:
         run: |
           node <<'EOF'
           const fs = require('fs');
-          const summaryPath = 'coverage/coverage-summary.json';
-          if (!fs.existsSync(summaryPath)) {
-            console.log('No coverage summary found; skipping table.');
-            return;
+          const path = 'coverage/coverage-summary.json';
+          if (fs.existsSync(path)) {
+            const summary = JSON.parse(fs.readFileSync(path, 'utf8')).total;
+            const lines = [
+              '### ✅ Test Coverage',
+              '',
+              '| Metric | % | Covered / Total |',
+              '| --- | --- | --- |',
+              ...[
+                ['Statements', summary.statements],
+                ['Branches', summary.branches],
+                ['Functions', summary.functions],
+                ['Lines', summary.lines],
+              ].map(([label, stats]) => `| ${label} | ${stats.pct}% | ${stats.covered}/${stats.total} |`),
+              '',
+              'La vue détaillée du coverage est disponible dans l’artefact attaché.',
+            ];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n'));
+          } else {
+            fs.appendFileSync(
+              process.env.GITHUB_STEP_SUMMARY,
+              "### ⚠️ Coverage report\n\nAucun fichier `coverage/coverage-summary.json` généré. Vérifiez `npm run test:coverage`."
+            );
           }
-          const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8')).total;
-          const rows = [
-            ['Statements', summary.statements],
-            ['Branches', summary.branches],
-            ['Functions', summary.functions],
-            ['Lines', summary.lines],
-          ];
-          const lines = [
-            '### ✅ Test Coverage',
-            '',
-            '| Metric | % | Covered / Total |',
-            '| --- | --- | --- |',
-            ...rows.map(([label, stats]) => `| ${label} | ${stats.pct}% | ${stats.covered}/${stats.total} |`),
-            '',
-            'La vue détaillée du coverage est disponible dans l’artefact attaché.',
-          ];
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n'));
           EOF
 
       - name: Upload coverage report

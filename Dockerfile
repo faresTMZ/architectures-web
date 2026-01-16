@@ -3,7 +3,7 @@
 # Platform: linux/amd64 | Port: 80 | User: non-root
 
 # ===== STAGE 1: Dependencies =====
-FROM --platform=linux/amd64 node:20-alpine AS deps
+FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Copy package files
@@ -14,7 +14,7 @@ RUN npm ci --only=production && \
     npm cache clean --force
 
 # ===== STAGE 2: Builder =====
-FROM --platform=linux/amd64 node:20-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -31,7 +31,7 @@ COPY 3-universal/ ./
 RUN npm run build
 
 # ===== STAGE 3: Runner =====
-FROM --platform=linux/amd64 node:20-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Set production environment

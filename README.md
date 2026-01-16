@@ -61,3 +61,14 @@ Toute initiative est la bienvenue, tant que les fonctionnalités demandées sont
 Voir [ce tableur](https://docs.google.com/spreadsheets/d/1shCI6NBOLrC_3sfzv9q0GupgE1JmD5wJv8AmuVOCqAk/edit?usp=sharing)
 
 Envoyez moi un message pour inscrire votre groupe. J'ai besoin de vos noms dans un premier temps, puis renvoyez moi un message pour remplir le lien github et le lien vers votre image docker.
+
+## CI/CD
+
+Le workflow GitHub Actions [`CI`](.github/workflows/ci.yml) se déclenche sur chaque push/pull request vers `main` et orchestre la pipeline complète :
+
+- `Tests & Coverage` : installe les dépendances de `3-universal`, lance `npm run lint` puis `npm run test:coverage`, publie un résumé dans le `GITHUB_STEP_SUMMARY` et attache l'artefact `coverage-report`.
+- `Build Application` : valide la compilation Next.js pour garantir que la prod reflète l'état du dépôt.
+- `Docker Build` : vérifie que le Dockerfile multi-stage génère bien une image `linux/amd64`.
+- `DockerHub CD` : sur un push `main`, construit et pousse l'image vers DockerHub (`<DOCKERHUB_USERNAME>/<repo>`), puis ajoute dans le résumé d'exécution les liens vers la documentation DockerHub et la description de cette action.
+
+Configurez les secrets `DOCKERHUB_USERNAME` et `DOCKERHUB_TOKEN` (voir [DOCKERHUB_SETUP.md](DOCKERHUB_SETUP.md)) pour activer la partie CD. Le résumé du workflow contient toujours les liens directs vers la documentation Docker et les tags poussés afin de faciliter le partage avec l'équipe.

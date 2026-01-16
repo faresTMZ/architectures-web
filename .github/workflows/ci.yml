@@ -1,0 +1,186 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests-and-coverage:
+    name: Tests & Coverage
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./3-universal
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./3-universal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Publish coverage summary
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+          const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8')).total;
+          const rows = [
+            ['Statements', summary.statements],
+            ['Branches', summary.branches],
+            ['Functions', summary.functions],
+            ['Lines', summary.lines],
+          ];
+          const lines = [
+            '### ✅ Test Coverage',
+            '',
+            '| Metric | % | Covered / Total |',
+            '| --- | --- | --- |',
+            ...rows.map(([label, stats]) => `| ${label} | ${stats.pct}% | ${stats.covered}/${stats.total} |`),
+            '',
+            'La vue détaillée du coverage est disponible dans l’artefact attaché.',
+          ];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n'));
+          EOF
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./3-universal/coverage
+          retention-days: 7
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: tests-and-coverage
+
+    defaults:
+      run:
+        working-directory: ./3-universal
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./3-universal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextjs-build
+          path: ./3-universal/.next
+          retention-days: 7
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: recipes-app:${{ github.sha }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  dockerhub-release:
+    name: DockerHub CD
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build & push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Publish CD documentation
+        run: |
+          DOC_BASE="https://github.com/${{ github.repository }}/blob/${{ github.sha }}"
+          {
+            echo "### :rocket: Continuous Deployment"
+            echo ""
+            echo "- Image DockerHub : \`${{ env.IMAGE_NAME }}\`"
+            echo "- Guide DockerHub : ${DOC_BASE}/DOCKERHUB_SETUP.md"
+            echo "- Détails du workflow CI/CD : ${DOC_BASE}/README.md#cicd"
+            echo ""
+            echo "**Tags publiés :**"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo ""
+            echo "Voir l'image : https://hub.docker.com/r/${{ env.IMAGE_NAME }}"
+          } >> $GITHUB_STEP_SUMMARY

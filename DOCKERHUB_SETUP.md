@@ -160,7 +160,7 @@ docker push VOTRE-DOCKERHUB-USERNAME/VOTRE-REPO:latest
 
 ## 🔄 Workflow automatique configuré
 
-Le fichier `.github/workflows/docker-publish.yml` est configuré pour :
+Le workflow `.github/workflows/ci.yml` (job `DockerHub CD`) est configuré pour :
 
 ✅ **Déclencher automatiquement** à chaque push sur `main`
 ✅ **Builder l'image** pour `linux/amd64`

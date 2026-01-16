@@ -78,77 +78,66 @@ docker stop <CONTAINER_ID>
 
 ---
 
-## 📤 Publier sur GitHub Container Registry (automatique)
+## 📤 Publier automatiquement via GitHub Actions (DockerHub)
 
 ### Configuration (une seule fois)
 
-Le workflow GitHub Actions est déjà configuré dans `.github/workflows/docker-publish.yml`
+Le job `DockerHub CD` du workflow `.github/workflows/ci.yml` gère le déploiement continu.
 
 **Que fait ce workflow ?**
 - ✅ Build automatique à chaque push sur `main`
-- ✅ Publication sur GitHub Container Registry (ghcr.io)
-- ✅ Tags automatiques (latest, version, sha)
-- ✅ Plateforme linux/amd64
-- ✅ Cache pour accélérer les builds
+- ✅ Publication sur DockerHub (repository `DOCKERHUB_USERNAME/<nom-du-repo>`)
+- ✅ Tags automatiques (latest, branch, sha, semver)
+- ✅ Plateforme linux/amd64 avec cache Buildx
+- ✅ Ajoute un résumé contenant les liens de documentation dans GitHub Actions
 
 ### Activer le workflow
 
-1. **Rendez votre package public** (après le premier push) :
-   - Allez sur GitHub → Votre repo → Packages
-   - Cliquez sur votre image
-   - Package settings → Change visibility → Public
-
-2. **Push votre code**
+1. **Configurer les secrets DockerHub**
+   - Ajoutez `DOCKERHUB_USERNAME` et `DOCKERHUB_TOKEN` (voir [DOCKERHUB_SETUP.md](DOCKERHUB_SETUP.md) pour les détails pas-à-pas).
+2. **Pousser votre code**
    ```bash
    git add .
-   git commit -m "Add Docker configuration"
+   git commit -m "Configure CI/CD"
    git push origin main
    ```
-
-3. **Vérifier le build**
-   - Allez sur GitHub → Actions
-   - Vous verrez le workflow "Build and Push Docker Image" s'exécuter
-   - Une fois terminé, votre image sera disponible sur `ghcr.io/VOTRE-USERNAME/VOTRE-REPO:latest`
+3. **Vérifier le job `DockerHub CD`**
+   - GitHub → Actions → Workflow `CI`
+   - Ouvrez le résumé (`Summary`) pour voir l’URL DockerHub et les tags poussés.
 
 ### URL de votre image
 
-Après le premier build réussi, votre image sera disponible à :
+Après le premier déploiement, votre image sera disponible sur :
 ```
-ghcr.io/<votre-username>/<nom-du-repo>:latest
+https://hub.docker.com/r/<votre-username>/<nom-du-repo>
 ```
 
-Exemple :
+Téléchargement direct :
 ```
-ghcr.io/farestazi/architectures-web:latest
+docker pull <votre-username>/<nom-du-repo>:latest
 ```
 
 ---
 
-## 📤 Alternative : Publier sur DockerHub
+## 📤 Alternative : Publication manuelle ou vers un autre registry
 
-Si vous préférez DockerHub au lieu de GitHub Container Registry :
+### 1. Publier manuellement sur DockerHub
 
-### 1. Créer un compte DockerHub
-- https://hub.docker.com/signup
-
-### 2. Se connecter localement
 ```bash
 docker login
-# Entrez votre username et password DockerHub
-```
+# Username/password ou token DockerHub
 
-### 3. Taguer et publier
-```bash
-# Taguer l'image
 docker tag mon-app-recettes:latest VOTRE-USERNAME/mon-app-recettes:latest
-
-# Publier
 docker push VOTRE-USERNAME/mon-app-recettes:latest
 ```
 
-### 4. Modifier le workflow pour DockerHub
+### 2. Adapter vers GitHub Container Registry (ghcr.io) ou un autre provider
 
-Créez un secret GitHub `DOCKERHUB_TOKEN` et modifiez `.github/workflows/docker-publish.yml` pour utiliser DockerHub au lieu de ghcr.io.
+- Remplacez l'étape `DockerHub CD` par une connexion au registry ciblé (`docker login ghcr.io`, `aws ecr get-login`, etc.).
+- Changez la variable `IMAGE_NAME` en conséquence (`ghcr.io/<org>/<repo>`).
+- Mettez à jour la documentation et les secrets (par exemple `GHCR_TOKEN`).
+
+Ces modifications se font dans `.github/workflows/ci.yml` : vous pouvez copier le job existant, le renommer, et ajuster uniquement la partie authentification/nom d'image.
 
 ---
 
@@ -186,8 +175,8 @@ docker run -it mon-app-recettes:latest sh
 - [ ] Conteneur testé sur http://localhost:8080
 - [ ] Code pushé sur GitHub
 - [ ] Workflow GitHub Actions exécuté avec succès
-- [ ] Image publiée sur ghcr.io (ou DockerHub)
-- [ ] Package rendu public sur GitHub
+- [ ] Image publiée sur DockerHub (ou un autre registry)
+- [ ] Package rendu public / repo rendu visible si nécessaire
 - [ ] URL de l'image partagée avec le professeur
 
 ---
